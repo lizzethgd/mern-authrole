@@ -1,15 +1,25 @@
 const express = require("express");
+const cookieParser = require('cookie-parser')
 const cors = require("cors");
 const mongoose = require('mongoose')
 require("dotenv").config();
+const authRoutes = require('./routes/authRoutes')
+const authController = require('./controllers/authController')
 
 const app = express();
 
 app.enable("trust proxy");
 
-app.use(cors({ origin: "*" }));
+app.use(cors({ 
+  origin: "http://localhost:3000",
+  credentials: true
+ }));
 
 app.use(express.json());
+app.use(cookieParser())
+
+app.use(authController.blackList('clearance'))
+app.use('/api/v1/auth', authRoutes)
 
 const DB = process.env.DATABASE;
 

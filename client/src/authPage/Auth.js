@@ -1,4 +1,5 @@
 import React, {useState} from 'react'
+import API from "../utils/API";
 
 const Auth = () => {
     const [register, setRegister] = useState(false)
@@ -10,6 +11,36 @@ const Auth = () => {
     
     const { email, password } = formData;
 
+    const clearance = 'admin'
+
+
+
+    //API CALLS
+    const signupUser = async (email, password, clearance ) => {
+      try {
+        const config = { headers: { "Content-Type": "application/json" } };
+        const body = { email, password, clearance };
+        const res = await API.post("api/v1/auth/signup", body, config);
+        console.log(res);
+      } catch (err) {
+        console.log(err.response.data.message);
+      }
+    }
+    
+    const loginUser = async (email, password) => {
+      try {
+        const config = { headers: { "Content-Type": "application/json" } };
+        const body = { email, password };
+        const res = await API.post("api/v1/auth/login", body, config);
+        console.log(res);
+      } catch (err) {
+        console.log(err);
+        console.log(err.response.data.message);
+        console.log(err.message);
+      }
+    };
+
+    //FUNCTIONS
     const onChange = e => {
         setFormData({
           ...formData,
@@ -18,21 +49,20 @@ const Auth = () => {
       };
 
     const onSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(email, password);
+        register ? signupUser(email, password, clearance) : loginUser(email, password)
        console.log('button clicked')
     };
 
     const registerClass = !register
     ? "form-switcher__option"
-    : "form-switcher__option form-switcher__option--selected";
+    : "form-switcher__option form-switcher__option--selected"
 
     const loginClass = register
     ? "form-switcher__option"
-    : "form-switcher__option form-switcher__option--selected";
+    : "form-switcher__option form-switcher__option--selected"
 
-    const buttonText = register
-    ? 'Signup'
-    : 'Login'
+    const buttonText = register? 'Signup' : 'Login'
 
     return (
     <>
@@ -64,7 +94,7 @@ const Auth = () => {
         name="password"
         value={password}
         onChange={onChange}
-        minLength="8"
+        minLength="6"
         required
       />
       <input className="input__submit" type="submit" value={buttonText} />
